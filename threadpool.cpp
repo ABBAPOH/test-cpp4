@@ -56,7 +56,7 @@ void ThreadPool::init(int numthreads)
 
     for (int i = 0; i < numthreads; ++i) {
         threads.emplace_back(new PooledThread(this));
-        threads[i]->start();
+        threads.back()->start();
     }
 }
 
