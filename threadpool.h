@@ -24,10 +24,12 @@ private:
     // Can't use QVector with unique_ptr's :(
     std::vector<std::unique_ptr<QThread>> threads;
 
+    // shared data
     QMutex mutex;
     bool quit {false};
     QList<QString /*id*/> queue;
     QHash<QString /*id*/, QVector<RunnablePointer>> tasks;
+
     friend class PooledThread;
 };
 
