@@ -10,7 +10,7 @@ public:
     void run() override
     {
         QEventLoop loop;
-        QTimer::singleShot(qrand() % 500, &loop, &QEventLoop::quit);
+        QTimer::singleShot(qrand() % 100, &loop, &QEventLoop::quit);
         loop.exec();
         qDebug() << "Hello from client" << _id << "thread" << QThread::currentThreadId();
     }
@@ -27,12 +27,11 @@ int main(int argc, char *argv[])
 
     for (int j = 0; j < 10; ++j) { // tasks
 
-        for (int i = 0; i < 100; ++i) { // clients
+        for (int i = 0; i < 20; ++i) { // clients
             QString id = QStringLiteral("Client %1").arg(i);
             pool.start(id, RunnablePointer(new TestTask(id)));
         }
     }
 
-    app.exec();
     return 0;
 }

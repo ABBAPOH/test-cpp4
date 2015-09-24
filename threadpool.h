@@ -25,6 +25,7 @@ private:
     std::vector<std::unique_ptr<QThread>> threads;
 
     QMutex mutex;
+    bool quit {false};
     QList<QString /*id*/> queue;
     QHash<QString /*id*/, QVector<RunnablePointer>> tasks;
     friend class PooledThread;
