@@ -4,6 +4,7 @@
 #include "runnable.h"
 #include <QThread>
 #include <QVector>
+#include <QWaitCondition>
 
 class ThreadPool : public QObject
 {
@@ -29,6 +30,8 @@ private:
     bool quit {false};
     QList<QString /*id*/> queue;
     QHash<QString /*id*/, QVector<RunnablePointer>> tasks;
+    QWaitCondition waitCondition;
+    int waitCount {0};
 
     friend class PooledThread;
 };

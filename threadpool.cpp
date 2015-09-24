@@ -35,6 +35,7 @@ ThreadPool::~ThreadPool()
 {
     QMutexLocker l(&mutex);
     quit = true;
+    waitCondition.wakeAll();
     l.unlock();
     for (const auto &thread : threads) {
         thread->wait();
@@ -47,6 +48,10 @@ void ThreadPool::start(const QString &id, const RunnablePointer &task)
 
     queue.append(id);
     tasks[id].append(task);
+    if (waitCount) {
+        waitCount--;
+        waitCondition.wakeOne();
+    }
 }
 
 void ThreadPool::init(int numthreads)
@@ -66,8 +71,11 @@ void ThreadPool::run()
         QMutexLocker l(&mutex);
         if (quit && queue.isEmpty())
             break;
-        if (queue.isEmpty())
+        if (queue.isEmpty()) {
+            waitCount++;
+            waitCondition.wait(&mutex);
             continue;
+        }
         const auto id = queue.takeFirst();
         auto task = tasks[id].takeFirst();
         l.unlock();
