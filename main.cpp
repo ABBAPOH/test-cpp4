@@ -26,7 +26,6 @@ int main(int argc, char *argv[])
     ThreadPool pool;
 
     for (int j = 0; j < 10; ++j) { // tasks
-
         for (int i = 0; i < 20; ++i) { // clients
             QString id = QStringLiteral("Client %1, task %2").arg(i).arg(j);
             pool.start(id, RunnablePointer(new TestTask(id)));
