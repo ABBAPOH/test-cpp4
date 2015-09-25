@@ -2,9 +2,11 @@
 #define THREADPOOL_H
 
 #include "runnable.h"
+#include <QMutex>
 #include <QThread>
 #include <QVector>
 #include <QWaitCondition>
+#include <memory>
 
 class ThreadPool : public QObject
 {
@@ -28,8 +30,10 @@ private:
     // shared data
     QMutex mutex;
     bool quit {false};
-    QList<QString /*id*/> queue;
-    QHash<QString /*id*/, QVector<RunnablePointer>> tasks;
+    using TaskMap = QHash<QString /*id*/, QVector<RunnablePointer>>;
+    TaskMap tasks;
+    TaskMap::Iterator next_id {tasks.end()};
+
     QWaitCondition waitCondition;
     int waitCount {0};
 
