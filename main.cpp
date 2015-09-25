@@ -6,17 +6,17 @@
 class TestTask : public Runnable
 {
 public:
-    TestTask(const QString &id) : _id(id) {}
+    TestTask(const QString &text) : _text(text) {}
     void run() override
     {
         QEventLoop loop;
         QTimer::singleShot(qrand() % 100, &loop, &QEventLoop::quit);
         loop.exec();
-        qDebug() << "Hello from" << _id << "thread" << QThread::currentThreadId();
+        qDebug() << "Hello from" << _text << "thread" << QThread::currentThreadId();
     }
 
 private:
-    QString _id;
+    QString _text;
 };
 
 int main(int argc, char *argv[])
@@ -27,8 +27,9 @@ int main(int argc, char *argv[])
 
     for (int j = 0; j < 10; ++j) { // tasks
         for (int i = 0; i < 20; ++i) { // clients
-            QString id = QStringLiteral("Client %1, task %2").arg(i).arg(j);
-            pool.start(id, RunnablePointer(new TestTask(id)));
+            QString id = QStringLiteral("%1").arg(i);
+            QString text = QStringLiteral("Client %1, task %2").arg(i).arg(j);
+            pool.start(id, RunnablePointer(new TestTask(text)));
         }
     }
 
