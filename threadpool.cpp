@@ -48,6 +48,8 @@ void ThreadPool::start(const QString &id, const RunnablePointer &task)
     QMutexLocker l(&mutex);
 
     tasks[id].append(task);
+    if (tasks[id].count() == 1)
+        queue.push_back(id);
     if (waitCount) {
         waitCount--;
         waitCondition.wakeOne();
@@ -69,25 +71,23 @@ void ThreadPool::run()
 {
     while (true) {
         QMutexLocker l(&mutex);
-        if (quit && tasks.isEmpty())
+        if (quit && queue.isEmpty())
             break;
-        if (tasks.isEmpty()) {
+        if (queue.isEmpty()) {
             waitCount++;
             waitCondition.wait(&mutex);
             continue;
         }
 
-        Q_ASSERT(!tasks.isEmpty());
-        if (next_id == tasks.end())
-            next_id = tasks.begin();
-
-        auto task = next_id->takeFirst();
-        if (next_id->isEmpty())
-            next_id = tasks.erase(next_id);
-        else
-            next_id++;
+        const auto id = queue.takeFirst();
+        const auto task = tasks[id].first();
         l.unlock();
 
         task->run();
+
+        l.relock();
+        tasks[id].takeFirst();
+        if (tasks[id].count() > 0)
+            queue.append(id);
     }
 }

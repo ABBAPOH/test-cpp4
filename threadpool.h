@@ -31,6 +31,7 @@ private:
     QMutex mutex;
     bool quit {false};
     using TaskMap = QHash<QString /*id*/, QVector<RunnablePointer>>;
+    QList<QString> queue;
     TaskMap tasks;
     TaskMap::Iterator next_id {tasks.end()};
 
