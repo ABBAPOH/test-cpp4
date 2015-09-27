@@ -89,5 +89,7 @@ void ThreadPool::run()
         tasks[id].takeFirst();
         if (tasks[id].count() > 0)
             queue.append(id);
+        else
+            tasks.remove(id);
     }
 }
